@@ -1,4 +1,3 @@
-import java.util.jar.Attributes.Name;
 
 public class Astronaut {
     String emailAddress;
