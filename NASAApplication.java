@@ -4,17 +4,23 @@ import java.awt.event.ActionListener;
 import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Base64;
 
 public class NASAApplication {
-
+    private AstronautManager astronautManager;
     private static final String PASSWORD_FILE = "password.txt"; // File to store the password
+    private static final String ASTRONAUTS_FILE = "astronauts.dat"; // File to store astronauts
     private JFrame frame;
     private JPanel welcomePanel, menuPanel;
     private JTextField passwordField;
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new NASAApplication().createAndShowGUI());
+        SwingUtilities.invokeLater(() -> {
+            NASAApplication app = new NASAApplication();
+            app.createAndShowGUI();
+        });
     }
 
     private void createAndShowGUI() {
@@ -64,31 +70,110 @@ public class NASAApplication {
         JLabel menuLabel = new JLabel("Menu");
         menuLabel.setBounds(230, 20, 60, 25);
         menuPanel.add(menuLabel);
-
+       
         JButton addAstronautButton = new JButton("Add Astronaut");
         addAstronautButton.setBounds(100, 100, 150, 25);
-        // Add ActionListener to handle adding astronauts
+        addAstronautButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Code to get astronaut information...
+                String name = JOptionPane.showInputDialog(frame, "Enter Name:");
+                String emailAddress = JOptionPane.showInputDialog(frame, "Enter Email Address:");
+                int dateOfBirth = Integer.parseInt(JOptionPane.showInputDialog(frame, "Enter Date of Birth:"));
+                int serialNumber = Integer.parseInt(JOptionPane.showInputDialog(frame, "Enter Serial Number:"));
+                int phoneNumber = Integer.parseInt(JOptionPane.showInputDialog(frame, "Enter Phone Number:"));
+                String address = JOptionPane.showInputDialog(frame, "Enter Address:");
+        
+                Astronaut newAstronaut = new Astronaut(name, emailAddress, dateOfBirth, serialNumber, phoneNumber, address);
+        
+                // Code to add astronaut to the manager...
+                astronautManager.addAstronaut(newAstronaut);
+        
+                // Code to save astronauts to file...
+                saveAstronauts();
+        
+                // Display success message
+                JOptionPane.showMessageDialog(frame, "Astronaut added successfully.");
+            }
+        });
         menuPanel.add(addAstronautButton);
-
-        JButton launchButton = new JButton("Launch");
-        launchButton.setBounds(100, 300, 250, 50); // Larger size: width 250, height 50
-        // Add ActionListener to handle launching
-        menuPanel.add(launchButton);
+        
+        JButton displayAstronautsButton = new JButton("Display Astronauts");
+        displayAstronautsButton.setBounds(100, 150, 150, 25);
+        displayAstronautsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                displayAstronauts(); // Call the displayAstronauts method
+            }
+        });
+        menuPanel.add(displayAstronautsButton);
 
         JButton removeAstronautButton = new JButton("Remove Astronaut");
-        removeAstronautButton.setBounds(100, 150, 150, 25);
-        // Add ActionListener to handle removing astronauts
+        removeAstronautButton.setBounds(100, 200, 150, 25);
+        removeAstronautButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (astronautManager == null) {
+                    JOptionPane.showMessageDialog(frame, "No astronauts to remove.");
+                    return;
+                }
+                // Call a method to remove astronaut
+            }
+        });
         menuPanel.add(removeAstronautButton);
 
         JButton addSpacecraftButton = new JButton("Add Spacecraft");
-        addSpacecraftButton.setBounds(100, 200, 150, 25);
-        // Add ActionListener to handle adding spacecrafts
+        addSpacecraftButton.setBounds(100, 250, 150, 25);
         menuPanel.add(addSpacecraftButton);
 
         JButton removeSpacecraftButton = new JButton("Remove Spacecraft");
-        removeSpacecraftButton.setBounds(100, 250, 150, 25);
-        // Add ActionListener to handle removing spacecrafts
+        removeSpacecraftButton.setBounds(100, 300, 150, 25);
         menuPanel.add(removeSpacecraftButton);
+
+        frame.add(menuPanel);
+        frame.revalidate();
+        frame.repaint();
+    }
+
+    private void saveAstronauts() {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(ASTRONAUTS_FILE))) {
+            oos.writeObject(astronautManager.getAstronauts());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private List<Astronaut> loadAstronauts() {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(ASTRONAUTS_FILE))) {
+            return (List<Astronaut>) ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    private String readStoredPasswordHash() {
+        try (BufferedReader reader = new BufferedReader(new FileReader(PASSWORD_FILE))) {
+            return reader.readLine();
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    private boolean validatePassword(String enteredPassword, String storedPasswordHash) {
+        String enteredPasswordHash = hashPassword(enteredPassword);
+        return enteredPasswordHash != null && enteredPasswordHash.equals(storedPasswordHash);
+    }
+
+    private String hashPassword(String password) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] hash = md.digest(password.getBytes());
+            return Base64.getEncoder().encodeToString(hash);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private class LoginButtonListener implements ActionListener {
@@ -102,9 +187,6 @@ public class NASAApplication {
             } else if (validatePassword(enteredPassword, storedPasswordHash)) {
                 frame.remove(welcomePanel);
                 createMenuPanel();
-                frame.add(menuPanel);
-                frame.revalidate();
-                frame.repaint();
             } else {
                 JOptionPane.showMessageDialog(frame, "Incorrect Password. Try again.");
             }
@@ -124,7 +206,6 @@ public class NASAApplication {
         }
     }
 
-    // Save the password to a file (hashed for security)
     private void savePassword(String password) {
         String hashedPassword = hashPassword(password);
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(PASSWORD_FILE))) {
@@ -133,31 +214,31 @@ public class NASAApplication {
             e.printStackTrace();
         }
     }
+    private void displayAstronauts() {
+        List<Astronaut> astronauts = loadAstronauts();
+        StringBuilder displayMessage = new StringBuilder("Astronauts:\n");
 
-    // Read the stored password hash from the file
-    private String readStoredPasswordHash() {
-        try (BufferedReader reader = new BufferedReader(new FileReader(PASSWORD_FILE))) {
-            return reader.readLine();
-        } catch (IOException e) {
-            return null;
+        for (Astronaut astronaut : astronauts) {
+            // Generate ASCII art representation of the astronaut character
+            String astronautArt = generateAstronautArt();
+
+            // Append astronaut information along with the ASCII art representation
+            displayMessage.append(astronautArt).append(" Name: ").append(astronaut.getName())
+                    .append(", Email: ").append(astronaut.getEmailAddress())
+                    .append(", DOB: ").append(astronaut.getDateOfBirth())
+                    .append(", Serial No: ").append(astronaut.getSerialNumber())
+                    .append(", Phone No: ").append(astronaut.getPhoneNumber())
+                    .append(", Address: ").append(astronaut.getAddress()).append("\n");
         }
+
+        JOptionPane.showMessageDialog(frame, displayMessage.toString());
     }
 
-    // Hash the password using SHA-256
-    private String hashPassword(String password) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] hash = md.digest(password.getBytes());
-            return Base64.getEncoder().encodeToString(hash);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    // Validate the entered password against the stored hash
-    private boolean validatePassword(String enteredPassword, String storedPasswordHash) {
-        String enteredPasswordHash = hashPassword(enteredPassword);
-        return enteredPasswordHash != null && enteredPasswordHash.equals(storedPasswordHash);
+    private String generateAstronautArt() {
+        // ASCII art representation of an astronaut (you can replace this with your own)
+        return "  o\n\\_\\|\\/_/\n   |";
     }
 }
+
+
+
