@@ -142,14 +142,27 @@ public class NASAApplication {
             e.printStackTrace();
         }
     }
-
     private List<Astronaut> loadAstronauts() {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(ASTRONAUTS_FILE))) {
-            return (List<Astronaut>) ois.readObject();
+            Object obj = ois.readObject();
+            if (obj instanceof List) {
+                List<?> list = (List<?>) obj;
+                List<Astronaut> astronauts = new ArrayList<>();
+                for (Object o : list) {
+                    if (o instanceof Astronaut) {
+                        astronauts.add((Astronaut) o);
+                    } else {
+                        // Handle unexpected object type if needed
+                    }
+                }
+                return astronauts;
+            } else {
+                // Handle unexpected object type if needed
+            }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
-            return new ArrayList<>();
         }
+        return new ArrayList<>();
     }
 
     private String readStoredPasswordHash() {
