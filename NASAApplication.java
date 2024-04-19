@@ -70,6 +70,11 @@ public class NASAApplication {
         // Add ActionListener to handle adding astronauts
         menuPanel.add(addAstronautButton);
 
+        JButton launchButton = new JButton("Launch");
+        launchButton.setBounds(100, 300, 250, 50); // Larger size: width 250, height 50
+        // Add ActionListener to handle launching
+        menuPanel.add(launchButton);
+
         JButton removeAstronautButton = new JButton("Remove Astronaut");
         removeAstronautButton.setBounds(100, 150, 150, 25);
         // Add ActionListener to handle removing astronauts
