@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Base64;
 
 public class NASAApplication {
-    private AstronautManager astronautManager;
+    private static AstronautManager astronautManager;
     private static final String PASSWORD_FILE = "password.txt"; // File to store the password
     private static final String ASTRONAUTS_FILE = "astronauts.dat"; // File to store astronauts
     private JFrame frame;
@@ -17,6 +17,7 @@ public class NASAApplication {
     private JTextField passwordField;
 
     public static void main(String[] args) {
+        astronautManager = new AstronautManager();
         SwingUtilities.invokeLater(() -> {
             NASAApplication app = new NASAApplication();
             app.createAndShowGUI();
@@ -83,15 +84,12 @@ public class NASAApplication {
                 int serialNumber = Integer.parseInt(JOptionPane.showInputDialog(frame, "Enter Serial Number:"));
                 int phoneNumber = Integer.parseInt(JOptionPane.showInputDialog(frame, "Enter Phone Number:"));
                 String address = JOptionPane.showInputDialog(frame, "Enter Address:");
-        
+            
                 Astronaut newAstronaut = new Astronaut(name, emailAddress, dateOfBirth, serialNumber, phoneNumber, address);
-        
                 // Code to add astronaut to the manager...
                 astronautManager.addAstronaut(newAstronaut);
-        
                 // Code to save astronauts to file...
-                saveAstronauts();
-        
+               saveAstronauts();    
                 // Display success message
                 JOptionPane.showMessageDialog(frame, "Astronaut added successfully.");
             }

@@ -10,9 +10,10 @@ public class AstronautManager implements Serializable {
     }
 
     public void addAstronaut(Astronaut astronaut) {
+        System.out.println("Astronaut name: "+ astronaut.getName());
         astronauts.add(astronaut);
     }
-
+        
     public List<Astronaut> getAstronauts() {
         return astronauts;
     }
