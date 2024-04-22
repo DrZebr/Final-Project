@@ -73,7 +73,7 @@ public class NASAApplication {
         JLabel menuLabel = new JLabel("Menu");
         menuLabel.setBounds(230, 20, 60, 25);
         menuPanel.add(menuLabel);
-       
+
         JButton addAstronautButton = new JButton("Add Astronaut");
         addAstronautButton.setBounds(100, 100, 150, 25);
         addAstronautButton.addActionListener(new ActionListener() {
@@ -86,18 +86,18 @@ public class NASAApplication {
                 int serialNumber = Integer.parseInt(JOptionPane.showInputDialog(frame, "Enter Serial Number:"));
                 int phoneNumber = Integer.parseInt(JOptionPane.showInputDialog(frame, "Enter Phone Number:"));
                 String address = JOptionPane.showInputDialog(frame, "Enter Address:");
-            
+
                 Astronaut newAstronaut = new Astronaut(name, emailAddress, dateOfBirth, serialNumber, phoneNumber, address);
                 // Code to add astronaut to the manager...
                 astronautManager.addAstronaut(newAstronaut);
                 // Code to save astronauts to file...
-               saveAstronauts();    
+                saveAstronauts();
                 // Display success message
                 JOptionPane.showMessageDialog(frame, "Astronaut added successfully.");
             }
         });
         menuPanel.add(addAstronautButton);
-        
+
         JButton displayAstronautsButton = new JButton("Display Astronauts");
         displayAstronautsButton.setBounds(100, 150, 150, 25);
         displayAstronautsButton.addActionListener(new ActionListener() {
@@ -113,14 +113,18 @@ public class NASAApplication {
         removeAstronautButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (astronautManager == null) {
-                    JOptionPane.showMessageDialog(frame, "No astronauts to remove.");
-                    return;
+                String name = JOptionPane.showInputDialog(frame, "Enter Astronaut Name:");
+                if (name != null && !name.isEmpty()) {
+                    astronautManager.removeAstronaut(name);
+                    saveAstronauts(); // Save the updated list of astronauts after removal
+                    JOptionPane.showMessageDialog(frame, "Astronaut removed successfully.");
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Invalid input. Please enter astronaut name.");
                 }
-                // Call a method to remove astronaut
             }
         });
         menuPanel.add(removeAstronautButton);
+
         JButton addSpacecraftButton = new JButton("Add Spacecraft");
         addSpacecraftButton.setBounds(100, 250, 150, 25);
         addSpacecraftButton.addActionListener(new ActionListener() {
@@ -182,6 +186,7 @@ public class NASAApplication {
         frame.revalidate();
         frame.repaint();
     }
+
     private void saveAstronauts() {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(ASTRONAUTS_FILE))) {
             oos.writeObject(astronautManager.getAstronauts());
@@ -189,6 +194,7 @@ public class NASAApplication {
             e.printStackTrace();
         }
     }
+
     private List<Astronaut> loadAstronauts() {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(ASTRONAUTS_FILE))) {
             Object obj = ois.readObject();
@@ -274,6 +280,7 @@ public class NASAApplication {
             e.printStackTrace();
         }
     }
+
     private void displayAstronauts() {
         List<Astronaut> astronauts = loadAstronauts();
         StringBuilder displayMessage = new StringBuilder("Astronauts:\n");
