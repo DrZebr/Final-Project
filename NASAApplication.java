@@ -121,20 +121,67 @@ public class NASAApplication {
             }
         });
         menuPanel.add(removeAstronautButton);
-
         JButton addSpacecraftButton = new JButton("Add Spacecraft");
         addSpacecraftButton.setBounds(100, 250, 150, 25);
+        addSpacecraftButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String name = JOptionPane.showInputDialog(frame, "Enter Spacecraft Name:");
+                String model = JOptionPane.showInputDialog(frame, "Enter Spacecraft Model:");
+                int capacity = Integer.parseInt(JOptionPane.showInputDialog(frame, "Enter Spacecraft Capacity:"));
+
+                Spacecraft newSpacecraft = new Spacecraft(name, model, capacity);
+                spacecraftManager.addSpacecraft(newSpacecraft);
+                JOptionPane.showMessageDialog(frame, "Spacecraft added successfully.");
+            }
+        });
         menuPanel.add(addSpacecraftButton);
 
         JButton removeSpacecraftButton = new JButton("Remove Spacecraft");
         removeSpacecraftButton.setBounds(100, 300, 150, 25);
+        removeSpacecraftButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                List<Spacecraft> spacecraftList = spacecraftManager.getSpacecrafts();
+                if (spacecraftList.isEmpty()) {
+                    JOptionPane.showMessageDialog(frame, "No spacecrafts to remove.");
+                    return;
+                }
+
+                String[] spacecraftNames = new String[spacecraftList.size()];
+                for (int i = 0; i < spacecraftList.size(); i++) {
+                    spacecraftNames[i] = spacecraftList.get(i).getName();
+                }
+
+                String selectedSpacecraftName = (String) JOptionPane.showInputDialog(frame,
+                        "Select Spacecraft to Remove:", "Remove Spacecraft",
+                        JOptionPane.QUESTION_MESSAGE, null,
+                        spacecraftNames, spacecraftNames[0]);
+
+                if (selectedSpacecraftName != null) {
+                    Spacecraft spacecraftToRemove = null;
+                    for (Spacecraft spacecraft : spacecraftList) {
+                        if (spacecraft.getName().equals(selectedSpacecraftName)) {
+                            spacecraftToRemove = spacecraft;
+                            break;
+                        }
+                    }
+
+                    if (spacecraftToRemove != null) {
+                        spacecraftManager.removeSpacecraft(spacecraftToRemove);
+                        JOptionPane.showMessageDialog(frame, "Spacecraft removed successfully.");
+                    } else {
+                        JOptionPane.showMessageDialog(frame, "Selected spacecraft not found.");
+                    }
+                }
+            }
+        });
         menuPanel.add(removeSpacecraftButton);
 
         frame.add(menuPanel);
         frame.revalidate();
         frame.repaint();
     }
-
     private void saveAstronauts() {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(ASTRONAUTS_FILE))) {
             oos.writeObject(astronautManager.getAstronauts());
@@ -252,6 +299,3 @@ public class NASAApplication {
         return "  o\n\\_\\|\\/_/\n   |";
     }
 }
-
-
-
