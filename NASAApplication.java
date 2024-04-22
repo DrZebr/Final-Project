@@ -10,6 +10,7 @@ import java.util.Base64;
 
 public class NASAApplication {
     private static AstronautManager astronautManager;
+    private static SpacecraftManager spacecraftManager;
     private static final String PASSWORD_FILE = "password.txt"; // File to store the password
     private static final String ASTRONAUTS_FILE = "astronauts.dat"; // File to store astronauts
     private JFrame frame;
@@ -18,6 +19,7 @@ public class NASAApplication {
 
     public static void main(String[] args) {
         astronautManager = new AstronautManager();
+        spacecraftManager = new SpacecraftManager();
         SwingUtilities.invokeLater(() -> {
             NASAApplication app = new NASAApplication();
             app.createAndShowGUI();
