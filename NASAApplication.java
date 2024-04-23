@@ -17,6 +17,7 @@ public class NASAApplication {
     private JFrame frame;
     private JPanel welcomePanel, menuPanel;
     private JTextField passwordField;
+ 
 
     public static void main(String[] args) {
         astronautManager = new AstronautManager();
@@ -24,6 +25,7 @@ public class NASAApplication {
         SwingUtilities.invokeLater(() -> {
             NASAApplication app = new NASAApplication();
             app.createAndShowGUI();
+            System.out.print("L bozo");
         });
     }
 
@@ -138,7 +140,7 @@ public class NASAApplication {
             }
         });
         menuPanel.add(removeAstronautButton);
-
+ 
         JButton addSpacecraftButton = new JButton("Add Spacecraft");
         addSpacecraftButton.setBounds(100, 250, 150, 25);
         addSpacecraftButton.addActionListener(new ActionListener() {
