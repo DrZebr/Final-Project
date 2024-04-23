@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Base64;
 
+// Import the Astronaut and Spacecraft classes
 public class NASAApplication {
     private static AstronautManager astronautManager;
     private static SpacecraftManager spacecraftManager;
@@ -80,6 +81,17 @@ public class NASAApplication {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Code to add astronaut...
+                String name = JOptionPane.showInputDialog(frame, "Enter astronaut name:");
+                String email = JOptionPane.showInputDialog(frame, "Enter astronaut email:");
+                int dob = Integer.parseInt(JOptionPane.showInputDialog(frame, "Enter astronaut date of birth:"));
+                int serialNumber = Integer.parseInt(JOptionPane.showInputDialog(frame, "Enter astronaut serial number:"));
+                int phoneNumber = Integer.parseInt(JOptionPane.showInputDialog(frame, "Enter astronaut phone number:"));
+                String address = JOptionPane.showInputDialog(frame, "Enter astronaut address:");
+                
+                Astronaut astronaut = new Astronaut(name, email, dob, serialNumber, phoneNumber, address);
+                astronautManager.addAstronaut(astronaut);
+                saveAstronauts(); // Save the updated list of astronauts
+                JOptionPane.showMessageDialog(frame, "Astronaut added successfully.");
             }
         });
         menuPanel.add(addAstronautButton);
@@ -89,7 +101,7 @@ public class NASAApplication {
         displayAstronautsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Code to display astronauts...
+                displayAstronauts();
             }
         });
         menuPanel.add(displayAstronautsButton);
@@ -99,25 +111,23 @@ public class NASAApplication {
         removeAstronautButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // Code to remove astronaut...
                 List<Astronaut> astronauts = astronautManager.getAstronauts();
                 if (astronauts.isEmpty()) {
                     JOptionPane.showMessageDialog(frame, "No astronauts to remove.");
                     return;
                 }
 
-                // Create an array to hold astronaut names
                 String[] astronautNames = new String[astronauts.size()];
                 for (int i = 0; i < astronauts.size(); i++) {
                     astronautNames[i] = astronauts.get(i).getName();
                 }
 
-                // Prompt the user to select an astronaut to remove
                 String selectedAstronautName = (String) JOptionPane.showInputDialog(frame,
                         "Select Astronaut to Remove:", "Remove Astronaut",
                         JOptionPane.QUESTION_MESSAGE, null,
                         astronautNames, astronautNames[0]);
 
-                // If user selects an astronaut, remove it
                 if (selectedAstronautName != null && !selectedAstronautName.isEmpty()) {
                     astronautManager.removeAstronaut(selectedAstronautName);
                     saveAstronauts(); // Save the updated list of astronauts after removal
@@ -135,6 +145,13 @@ public class NASAApplication {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Code to add spacecraft...
+                String name = JOptionPane.showInputDialog(frame, "Enter spacecraft name:");
+                String model = JOptionPane.showInputDialog(frame, "Enter spacecraft model:");
+                int capacity = Integer.parseInt(JOptionPane.showInputDialog(frame, "Enter spacecraft capacity:"));
+                
+                SpaceCraft spacecraft = new SpaceCraft(name, model, capacity);
+                spacecraftManager.addSpacecraft(spacecraft);
+                JOptionPane.showMessageDialog(frame, "Spacecraft added successfully.");
             }
         });
         menuPanel.add(addSpacecraftButton);
@@ -144,7 +161,8 @@ public class NASAApplication {
         removeSpacecraftButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                List<Spacecraft> spacecraftList = spacecraftManager.getSpacecrafts();
+                // Code to remove spacecraft...
+                List<SpaceCraft> spacecraftList = spacecraftManager.getSpacecrafts();
                 if (spacecraftList.isEmpty()) {
                     JOptionPane.showMessageDialog(frame, "No spacecrafts to remove.");
                     return;
@@ -161,8 +179,8 @@ public class NASAApplication {
                         spacecraftNames, spacecraftNames[0]);
 
                 if (selectedSpacecraftName != null) {
-                    Spacecraft spacecraftToRemove = null;
-                    for (Spacecraft spacecraft : spacecraftList) {
+                    SpaceCraft spacecraftToRemove = null;
+                    for (SpaceCraft spacecraft : spacecraftList) {
                         if (spacecraft.getName().equals(selectedSpacecraftName)) {
                             spacecraftToRemove = spacecraft;
                             break;
@@ -202,13 +220,9 @@ public class NASAApplication {
                 for (Object o : list) {
                     if (o instanceof Astronaut) {
                         astronauts.add((Astronaut) o);
-                    } else {
-                        // Handle unexpected object type if needed
                     }
                 }
                 return astronauts;
-            } else {
-                // Handle unexpected object type if needed
             }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
@@ -216,28 +230,29 @@ public class NASAApplication {
         return new ArrayList<>();
     }
 
-    private String readStoredPasswordHash() {
-        try (BufferedReader reader = new BufferedReader(new FileReader(PASSWORD_FILE))) {
-            return reader.readLine();
-        } catch (IOException e) {
-            return null;
+    private void displayAstronauts() {
+        List<Astronaut> astronauts = loadAstronauts();
+        StringBuilder displayMessage = new StringBuilder("Astronauts:\n");
+
+        for (Astronaut astronaut : astronauts) {
+            // Generate ASCII art representation of the astronaut character
+            String astronautArt = generateAstronautArt();
+
+            // Append astronaut information along with the ASCII art representation
+            displayMessage.append(astronautArt).append(" Name: ").append(astronaut.getName())
+                    .append(", Email: ").append(astronaut.getEmailAddress())
+                    .append(", DOB: ").append(astronaut.getDateOfBirth())
+                    .append(", Serial No: ").append(astronaut.getSerialNumber())
+                    .append(", Phone No: ").append(astronaut.getPhoneNumber())
+                    .append(", Address: ").append(astronaut.getAddress()).append("\n");
         }
+
+        JOptionPane.showMessageDialog(frame, displayMessage.toString());
     }
 
-    private boolean validatePassword(String enteredPassword, String storedPasswordHash) {
-        String enteredPasswordHash = hashPassword(enteredPassword);
-        return enteredPasswordHash != null && enteredPasswordHash.equals(storedPasswordHash);
-    }
-
-    private String hashPassword(String password) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] hash = md.digest(password.getBytes());
-            return Base64.getEncoder().encodeToString(hash);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return null;
-        }
+    private String generateAstronautArt() {
+        // ASCII art representation of an astronaut (you can replace this with your own)
+        return "  o\n\\_\\|\\/_/\n   |";
     }
 
     private class LoginButtonListener implements ActionListener {
@@ -270,6 +285,30 @@ public class NASAApplication {
         }
     }
 
+    private String readStoredPasswordHash() {
+        try (BufferedReader reader = new BufferedReader(new FileReader(PASSWORD_FILE))) {
+            return reader.readLine();
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    private boolean validatePassword(String enteredPassword, String storedPasswordHash) {
+        String enteredPasswordHash = hashPassword(enteredPassword);
+        return enteredPasswordHash != null && enteredPasswordHash.equals(storedPasswordHash);
+    }
+
+    private String hashPassword(String password) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] hash = md.digest(password.getBytes());
+            return Base64.getEncoder().encodeToString(hash);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     private void savePassword(String password) {
         String hashedPassword = hashPassword(password);
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(PASSWORD_FILE))) {
@@ -277,30 +316,5 @@ public class NASAApplication {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private void displayAstronauts() {
-        List<Astronaut> astronauts = loadAstronauts();
-        StringBuilder displayMessage = new StringBuilder("Astronauts:\n");
-
-        for (Astronaut astronaut : astronauts) {
-            // Generate ASCII art representation of the astronaut character
-            String astronautArt = generateAstronautArt();
-
-            // Append astronaut information along with the ASCII art representation
-            displayMessage.append(astronautArt).append(" Name: ").append(astronaut.getName())
-                    .append(", Email: ").append(astronaut.getEmailAddress())
-                    .append(", DOB: ").append(astronaut.getDateOfBirth())
-                    .append(", Serial No: ").append(astronaut.getSerialNumber())
-                    .append(", Phone No: ").append(astronaut.getPhoneNumber())
-                    .append(", Address: ").append(astronaut.getAddress()).append("\n");
-        }
-
-        JOptionPane.showMessageDialog(frame, displayMessage.toString());
-    }
-
-    private String generateAstronautArt() {
-        // ASCII art representation of an astronaut (you can replace this with your own)
-        return "  o\n\\_\\|\\/_/\n   |";
     }
 }

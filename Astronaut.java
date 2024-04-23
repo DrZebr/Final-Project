@@ -16,6 +16,27 @@ public class Astronaut implements Serializable {
         this.phoneNumber = phoneNumber;
         this.address = address;
     }
-
+    public String getEmailAddress() {
+        return this.emailAddress;
+    }
+    
+    public int getDateOfBirth() {
+        return this.dateOfBirth;
+    }
+    
+    public int getSerialNumber() {
+        return this.serialNumber;
+    }
+    
+    public int getPhoneNumber() {
+        return this.phoneNumber;
+    }
+    
+    public String getAddress() {
+        return this.address;
+    }
+    public String getName() {
+        return this.name;
+    }
     // Getters and setters omitted for brevity
 }
