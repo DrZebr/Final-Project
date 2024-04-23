@@ -1,3 +1,5 @@
+import java.util.List;
+
 public class SpaceCraft {
     private String name;
     private String model;
@@ -18,5 +20,6 @@ public class SpaceCraft {
     public String getName(){
         return this.name;
     }
+
     // Getters and setters omitted for brevity
 }

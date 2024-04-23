@@ -20,4 +20,13 @@ public class SpacecraftManager implements Serializable {
     public List<SpaceCraft> getSpacecrafts() {
         return spacecrafts;
     }
+
+    public String[] getSpacecraftNamesArray() {
+        List<SpaceCraft> spacecrafts = getSpacecrafts();
+        String[] names = new String[spacecrafts.size()];
+        for (int i = 0; i < spacecrafts.size(); i++) {
+            names[i] = spacecrafts.get(i).getName();
+        }
+        return names;
+    }
 }

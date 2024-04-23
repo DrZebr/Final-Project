@@ -7,8 +7,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Base64;
+import java.awt.Font;
 
-// Import the Astronaut and Spacecraft classes
 public class NASAApplication {
     private static AstronautManager astronautManager;
     private static SpacecraftManager spacecraftManager;
@@ -17,7 +17,6 @@ public class NASAApplication {
     private JFrame frame;
     private JPanel welcomePanel, menuPanel;
     private JTextField passwordField;
- 
 
     public static void main(String[] args) {
         astronautManager = new AstronautManager();
@@ -25,7 +24,6 @@ public class NASAApplication {
         SwingUtilities.invokeLater(() -> {
             NASAApplication app = new NASAApplication();
             app.createAndShowGUI();
-            System.out.print("L bozo");
         });
     }
 
@@ -89,7 +87,7 @@ public class NASAApplication {
                 int serialNumber = Integer.parseInt(JOptionPane.showInputDialog(frame, "Enter astronaut serial number:"));
                 int phoneNumber = Integer.parseInt(JOptionPane.showInputDialog(frame, "Enter astronaut phone number:"));
                 String address = JOptionPane.showInputDialog(frame, "Enter astronaut address:");
-                
+
                 Astronaut astronaut = new Astronaut(name, email, dob, serialNumber, phoneNumber, address);
                 astronautManager.addAstronaut(astronaut);
                 saveAstronauts(); // Save the updated list of astronauts
@@ -140,7 +138,7 @@ public class NASAApplication {
             }
         });
         menuPanel.add(removeAstronautButton);
- 
+
         JButton addSpacecraftButton = new JButton("Add Spacecraft");
         addSpacecraftButton.setBounds(100, 250, 150, 25);
         addSpacecraftButton.addActionListener(new ActionListener() {
@@ -150,7 +148,7 @@ public class NASAApplication {
                 String name = JOptionPane.showInputDialog(frame, "Enter spacecraft name:");
                 String model = JOptionPane.showInputDialog(frame, "Enter spacecraft model:");
                 int capacity = Integer.parseInt(JOptionPane.showInputDialog(frame, "Enter spacecraft capacity:"));
-                
+
                 SpaceCraft spacecraft = new SpaceCraft(name, model, capacity);
                 spacecraftManager.addSpacecraft(spacecraft);
                 JOptionPane.showMessageDialog(frame, "Spacecraft added successfully.");
@@ -200,9 +198,55 @@ public class NASAApplication {
         });
         menuPanel.add(removeSpacecraftButton);
 
-        frame.add(menuPanel);
-        frame.revalidate();
-        frame.repaint();
+        JButton launchButton = new JButton("LAUNCH");
+    launchButton.setBounds(100, 350, 300, 60); // Adjust the bounds for the big button
+    launchButton.setFont(new Font("Arial", Font.BOLD, 20)); // Set font size and style
+    launchButton.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            // Code to handle the launch action...
+            String selectedAstronaut = (String) JOptionPane.showInputDialog(frame,
+                    "Select an astronaut:", "Launch",
+                    JOptionPane.QUESTION_MESSAGE, null,
+                    astronautManager.getAstronautNamesArray(), null);
+
+            String selectedSpacecraft = (String) JOptionPane.showInputDialog(frame,
+                    "Select a spacecraft:", "Launch",
+                    JOptionPane.QUESTION_MESSAGE, null,
+                    spacecraftManager.getSpacecraftNamesArray(), null);
+
+            if (selectedAstronaut != null && selectedSpacecraft != null) {
+                JOptionPane.showMessageDialog(frame, "Launching " + selectedAstronaut + " into " + selectedSpacecraft);
+            } else {
+                JOptionPane.showMessageDialog(frame, "Launch cancelled.");
+            }
+        }
+    });
+    menuPanel.add(launchButton);
+
+    frame.add(menuPanel);
+    frame.revalidate();
+    frame.repaint();
+}
+
+    private void launchMission() {
+        // Ask for astronaut and spacecraft selection
+        String selectedAstronaut = (String) JOptionPane.showInputDialog(frame,
+                "Select Astronaut for the Mission:", "Mission Setup",
+                JOptionPane.QUESTION_MESSAGE, null,
+                astronautManager.getAstronautNamesArray(), null);
+
+        String selectedSpacecraft = (String) JOptionPane.showInputDialog(frame,
+                "Select Spacecraft for the Mission:", "Mission Setup",
+                JOptionPane.QUESTION_MESSAGE, null,
+                spacecraftManager.getSpacecraftNamesArray(), null);
+
+        if (selectedAstronaut != null && selectedSpacecraft != null) {
+            JOptionPane.showMessageDialog(frame, "Mission launched with Astronaut: " + selectedAstronaut +
+                    " and Spacecraft: " + selectedSpacecraft);
+        } else {
+            JOptionPane.showMessageDialog(frame, "Mission aborted. Astronaut or Spacecraft not selected.");
+        }
     }
 
     private void saveAstronauts() {

@@ -28,4 +28,13 @@ public class AstronautManager implements Serializable {
     public List<Astronaut> getAstronauts() {
         return astronauts;
     }
+    public String[] getAstronautNamesArray() {
+        List<Astronaut> astronauts = getAstronauts();
+        String[] names = new String[astronauts.size()];
+        for (int i = 0; i < astronauts.size(); i++) {
+            names[i] = astronauts.get(i).getName();
+        }
+        return names;
+    }
+
 }
