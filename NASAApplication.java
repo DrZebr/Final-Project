@@ -87,8 +87,10 @@ public class NASAApplication {
                 int serialNumber = Integer.parseInt(JOptionPane.showInputDialog(frame, "Enter astronaut serial number:"));
                 int phoneNumber = Integer.parseInt(JOptionPane.showInputDialog(frame, "Enter astronaut phone number:"));
                 String address = JOptionPane.showInputDialog(frame, "Enter astronaut address:");
-
-                Astronaut astronaut = new Astronaut(name, email, dob, serialNumber, phoneNumber, address);
+                double payRate = Double.parseDouble(JOptionPane.showInputDialog(frame, "Enter astronaut pay rate:")); // New input
+                double weight = Double.parseDouble(JOptionPane.showInputDialog(frame, "Enter astronaut weight:")); // New input
+        
+                Astronaut astronaut = new Astronaut(name, email, dob, serialNumber, phoneNumber, address, payRate, weight);
                 astronautManager.addAstronaut(astronaut);
                 saveAstronauts(); // Save the updated list of astronauts
                 JOptionPane.showMessageDialog(frame, "Astronaut added successfully.");
@@ -199,35 +201,100 @@ public class NASAApplication {
         menuPanel.add(removeSpacecraftButton);
 
         JButton launchButton = new JButton("LAUNCH");
-    launchButton.setBounds(100, 350, 300, 60); // Adjust the bounds for the big button
-    launchButton.setFont(new Font("Arial", Font.BOLD, 20)); // Set font size and style
-    launchButton.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            // Code to handle the launch action...
-            String selectedAstronaut = (String) JOptionPane.showInputDialog(frame,
-                    "Select an astronaut:", "Launch",
-                    JOptionPane.QUESTION_MESSAGE, null,
-                    astronautManager.getAstronautNamesArray(), null);
+        launchButton.setBounds(100, 350, 300, 60); // Adjust the bounds for the big button
+        launchButton.setFont(new Font("Arial", Font.BOLD, 20)); // Set font size and style
+        launchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Code to handle the launch action...
+                String selectedAstronaut = (String) JOptionPane.showInputDialog(frame,
+                        "Select an astronaut:", "Launch",
+                        JOptionPane.QUESTION_MESSAGE, null,
+                        astronautManager.getAstronautNamesArray(), null);
 
-            String selectedSpacecraft = (String) JOptionPane.showInputDialog(frame,
-                    "Select a spacecraft:", "Launch",
-                    JOptionPane.QUESTION_MESSAGE, null,
-                    spacecraftManager.getSpacecraftNamesArray(), null);
+                String selectedSpacecraft = (String) JOptionPane.showInputDialog(frame,
+                        "Select a spacecraft:", "Launch",
+                        JOptionPane.QUESTION_MESSAGE, null,
+                        spacecraftManager.getSpacecraftNamesArray(), null);
 
-            if (selectedAstronaut != null && selectedSpacecraft != null) {
-                JOptionPane.showMessageDialog(frame, "Launching " + selectedAstronaut + " into " + selectedSpacecraft);
-            } else {
-                JOptionPane.showMessageDialog(frame, "Launch cancelled.");
+                if (selectedAstronaut != null && selectedSpacecraft != null) {
+                    JOptionPane.showMessageDialog(frame, "Launching " + selectedAstronaut + " into " + selectedSpacecraft);
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Launch cancelled.");
+                }
             }
-        }
-    });
-    menuPanel.add(launchButton);
+        });
+        menuPanel.add(launchButton);
 
-    frame.add(menuPanel);
-    frame.revalidate();
-    frame.repaint();
-}
+        JButton editAstronautButton = new JButton("Edit Astronaut");
+        editAstronautButton.setBounds(100, 400, 150, 25);
+        editAstronautButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Code to edit astronaut...
+                List<Astronaut> astronauts = astronautManager.getAstronauts();
+                if (astronauts.isEmpty()) {
+                    JOptionPane.showMessageDialog(frame, "No astronauts to edit.");
+                    return;
+                }
+
+                String[] astronautNames = new String[astronauts.size()];
+                for (int i = 0; i < astronauts.size(); i++) {
+                    astronautNames[i] = astronauts.get(i).getName();
+                }
+
+                String selectedAstronautName = (String) JOptionPane.showInputDialog(frame,
+                        "Select Astronaut to Edit:", "Edit Astronaut",
+                        JOptionPane.QUESTION_MESSAGE, null,
+                        astronautNames, astronautNames[0]);
+
+                if (selectedAstronautName != null && !selectedAstronautName.isEmpty()) {
+                    // Find the selected astronaut
+                    Astronaut selectedAstronaut = null;
+                    for (Astronaut astronaut : astronauts) {
+                        if (astronaut.getName().equals(selectedAstronautName)) {
+                            selectedAstronaut = astronaut;
+                            break;
+                        }
+                    }
+
+                    if (selectedAstronaut != null) {
+                        // Display dialog to edit astronaut info
+                        String name = JOptionPane.showInputDialog(frame, "Enter new name:", selectedAstronaut.getName());
+                        String email = JOptionPane.showInputDialog(frame, "Enter new email:", selectedAstronaut.getEmailAddress());
+                        int dob = Integer.parseInt(JOptionPane.showInputDialog(frame, "Enter new date of birth:", selectedAstronaut.getDateOfBirth()));
+                        int serialNumber = Integer.parseInt(JOptionPane.showInputDialog(frame, "Enter new serial number:", selectedAstronaut.getSerialNumber()));
+                        int phoneNumber = Integer.parseInt(JOptionPane.showInputDialog(frame, "Enter new phone number:", selectedAstronaut.getPhoneNumber()));
+                        String address = JOptionPane.showInputDialog(frame, "Enter new address:", selectedAstronaut.getAddress());
+                        double payRate = Double.parseDouble(JOptionPane.showInputDialog(frame, "Enter new pay rate:", selectedAstronaut.getPayRate()));
+                        double weight = Double.parseDouble(JOptionPane.showInputDialog(frame, "Enter new weight:", selectedAstronaut.getWeight()));
+
+                        // Update astronaut information
+                        selectedAstronaut.setName(name);
+                        selectedAstronaut.setEmailAddress(email);
+                        selectedAstronaut.setDateOfBirth(dob);
+                        selectedAstronaut.setSerialNumber(serialNumber);
+                        selectedAstronaut.setPhoneNumber(phoneNumber);
+                        selectedAstronaut.setAddress(address);
+                        selectedAstronaut.setPayRate(payRate);
+                        selectedAstronaut.setWeight(weight);
+
+                        saveAstronauts(); // Save the updated list of astronauts
+                        JOptionPane.showMessageDialog(frame, "Astronaut information updated successfully.");
+                    } else {
+                        JOptionPane.showMessageDialog(frame, "Selected astronaut not found.");
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Invalid input. Please select an astronaut to edit.");
+                }
+            }
+        });
+        menuPanel.add(editAstronautButton);
+
+        frame.add(menuPanel);
+        frame.revalidate();
+        frame.repaint();
+    }
 
     private void launchMission() {
         // Ask for astronaut and spacecraft selection
@@ -261,8 +328,8 @@ public class NASAApplication {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(ASTRONAUTS_FILE))) {
             Object obj = ois.readObject();
             if (obj instanceof List) {
-                List<?> list = (List<?>) obj;
                 List<Astronaut> astronauts = new ArrayList<>();
+                List<?> list = (List<?>) obj;
                 for (Object o : list) {
                     if (o instanceof Astronaut) {
                         astronauts.add((Astronaut) o);
@@ -284,13 +351,17 @@ public class NASAApplication {
             // Generate ASCII art representation of the astronaut character
             String astronautArt = generateAstronautArt();
 
-            // Append astronaut information along with the ASCII art representation
-            displayMessage.append(astronautArt).append(" Name: ").append(astronaut.getName())
-                    .append(", Email: ").append(astronaut.getEmailAddress())
-                    .append(", DOB: ").append(astronaut.getDateOfBirth())
-                    .append(", Serial No: ").append(astronaut.getSerialNumber())
-                    .append(", Phone No: ").append(astronaut.getPhoneNumber())
-                    .append(", Address: ").append(astronaut.getAddress()).append("\n");
+            // Append astronaut information vertically
+            displayMessage.append(astronautArt).append("\n")
+                    .append("Name: ").append(astronaut.getName()).append("\n")
+                    .append("Email: ").append(astronaut.getEmailAddress()).append("\n")
+                    .append("DOB: ").append(astronaut.getDateOfBirth()).append("\n")
+                    .append("Serial No: ").append(astronaut.getSerialNumber()).append("\n")
+                    .append("Phone No: ").append(astronaut.getPhoneNumber()).append("\n")
+                    .append("Address: ").append(astronaut.getAddress()).append("\n")
+                    .append("Pay Rate: ").append(astronaut.getPayRate()).append("\n")
+                    .append("Weight: ").append(astronaut.getWeight()).append("\n\n");
+                    
         }
 
         JOptionPane.showMessageDialog(frame, displayMessage.toString());
