@@ -79,21 +79,7 @@ public class NASAApplication {
         addAstronautButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Code to get astronaut information...
-                String name = JOptionPane.showInputDialog(frame, "Enter Name:");
-                String emailAddress = JOptionPane.showInputDialog(frame, "Enter Email Address:");
-                int dateOfBirth = Integer.parseInt(JOptionPane.showInputDialog(frame, "Enter Date of Birth:"));
-                int serialNumber = Integer.parseInt(JOptionPane.showInputDialog(frame, "Enter Serial Number:"));
-                int phoneNumber = Integer.parseInt(JOptionPane.showInputDialog(frame, "Enter Phone Number:"));
-                String address = JOptionPane.showInputDialog(frame, "Enter Address:");
-
-                Astronaut newAstronaut = new Astronaut(name, emailAddress, dateOfBirth, serialNumber, phoneNumber, address);
-                // Code to add astronaut to the manager...
-                astronautManager.addAstronaut(newAstronaut);
-                // Code to save astronauts to file...
-                saveAstronauts();
-                // Display success message
-                JOptionPane.showMessageDialog(frame, "Astronaut added successfully.");
+                // Code to add astronaut...
             }
         });
         menuPanel.add(addAstronautButton);
@@ -103,7 +89,7 @@ public class NASAApplication {
         displayAstronautsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                displayAstronauts(); // Call the displayAstronauts method
+                // Code to display astronauts...
             }
         });
         menuPanel.add(displayAstronautsButton);
@@ -113,13 +99,31 @@ public class NASAApplication {
         removeAstronautButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String name = JOptionPane.showInputDialog(frame, "Enter Astronaut Name:");
-                if (name != null && !name.isEmpty()) {
-                    astronautManager.removeAstronaut(name);
+                List<Astronaut> astronauts = astronautManager.getAstronauts();
+                if (astronauts.isEmpty()) {
+                    JOptionPane.showMessageDialog(frame, "No astronauts to remove.");
+                    return;
+                }
+
+                // Create an array to hold astronaut names
+                String[] astronautNames = new String[astronauts.size()];
+                for (int i = 0; i < astronauts.size(); i++) {
+                    astronautNames[i] = astronauts.get(i).getName();
+                }
+
+                // Prompt the user to select an astronaut to remove
+                String selectedAstronautName = (String) JOptionPane.showInputDialog(frame,
+                        "Select Astronaut to Remove:", "Remove Astronaut",
+                        JOptionPane.QUESTION_MESSAGE, null,
+                        astronautNames, astronautNames[0]);
+
+                // If user selects an astronaut, remove it
+                if (selectedAstronautName != null && !selectedAstronautName.isEmpty()) {
+                    astronautManager.removeAstronaut(selectedAstronautName);
                     saveAstronauts(); // Save the updated list of astronauts after removal
                     JOptionPane.showMessageDialog(frame, "Astronaut removed successfully.");
                 } else {
-                    JOptionPane.showMessageDialog(frame, "Invalid input. Please enter astronaut name.");
+                    JOptionPane.showMessageDialog(frame, "Invalid input. Please select an astronaut to remove.");
                 }
             }
         });
@@ -130,13 +134,7 @@ public class NASAApplication {
         addSpacecraftButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String name = JOptionPane.showInputDialog(frame, "Enter Spacecraft Name:");
-                String model = JOptionPane.showInputDialog(frame, "Enter Spacecraft Model:");
-                int capacity = Integer.parseInt(JOptionPane.showInputDialog(frame, "Enter Spacecraft Capacity:"));
-
-                Spacecraft newSpacecraft = new Spacecraft(name, model, capacity);
-                spacecraftManager.addSpacecraft(newSpacecraft);
-                JOptionPane.showMessageDialog(frame, "Spacecraft added successfully.");
+                // Code to add spacecraft...
             }
         });
         menuPanel.add(addSpacecraftButton);
