@@ -9,6 +9,9 @@ public class Astronaut implements Serializable {
     private String address;
     private double payRate; // New attribute for pay rate
     private double weight; // New attribute for weight
+    private String status; // New attribute for status
+    private String maritalStatus; // New attribute for marital status
+    private boolean hasChildren; // New attribute for children status
 
     // Constructor with new attributes
     public Astronaut(String name, String emailAddress, int dateOfBirth, int serialNumber, int phoneNumber, String address, double payRate, double weight) {
@@ -58,38 +61,63 @@ public class Astronaut implements Serializable {
     public String getAddress() {
         return this.address;
     }
+    
     public String getName() {
         return this.name;
     }
-    // Getters and setters omitted for brevity
 
-    public void setAddress(String address2) {
-        
-        throw new UnsupportedOperationException("Unimplemented method 'setAddress'");
+    // Getters and setters for status, marital status, and children
+    public String getStatus() {
+        return status;
     }
 
-    public void setPhoneNumber(int phoneNumber2) {
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
-        throw new UnsupportedOperationException("Unimplemented method 'setPhoneNumber'");
+    public String getMaritalStatus() {
+        return maritalStatus;
+    }
+
+    public void setMaritalStatus(String maritalStatus) {
+        this.maritalStatus = maritalStatus;
+    }
+
+    public boolean hasChildren() {
+        return hasChildren;
+    }
+
+    public void setHasChildren(boolean hasChildren) {
+        this.hasChildren = hasChildren;
     }
 
     public void setSerialNumber(int serialNumber2) {
-      
+        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'setSerialNumber'");
     }
 
     public void setDateOfBirth(int dob) {
-      
+        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'setDateOfBirth'");
     }
 
     public void setEmailAddress(String email) {
-       
+        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'setEmailAddress'");
     }
 
     public void setName(String name2) {
-        
+        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'setName'");
+    }
+
+    public void setAddress(String address2) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setAddress'");
+    }
+
+    public void setPhoneNumber(int phoneNumber2) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setPhoneNumber'");
     }
 }

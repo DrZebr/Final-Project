@@ -1,5 +1,8 @@
 import javax.swing.*;
-
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -7,11 +10,21 @@ import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
 
 public class NASAApplication {
     private static AstronautManager astronautManager;
     private static SpacecraftManager spacecraftManager;
     private static final String PASSWORD_FILE = "password.txt"; // File to store the password
+    protected static final String ASTRONAUTS_FILE = null;
     private JFrame frame;
     private JPanel welcomePanel, menuPanel;
     private JTextField passwordField;
@@ -25,7 +38,7 @@ public class NASAApplication {
         });
     }
 
-    private void createAndShowGUI() {
+    void createAndShowGUI() {
         frame = new JFrame("NASA Application");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(520, 500);
@@ -92,12 +105,19 @@ public class NASAApplication {
         
                 Astronaut astronaut = new Astronaut(name, email, dob, serialNumber, phoneNumber, address, payRate, weight);
                 astronautManager.addAstronaut(astronaut);
-                saveAstronauts(); // Save the updated list of astronauts
+                saveAstronauts(frame); // Save the updated list of astronauts
                 JOptionPane.showMessageDialog(frame, "Astronaut added successfully.");
             }
-
-            private void saveAstronauts() {
-                throw new UnsupportedOperationException("Unimplemented method 'saveAstronauts'");
+        
+            private void saveAstronauts(JFrame frame) {
+                String ASTRONAUTS_FILE = "astronauts.dat"; // Provide a valid file path
+                try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(ASTRONAUTS_FILE))) {
+                    outputStream.writeObject(astronautManager.getAstronauts());
+                    JOptionPane.showMessageDialog(frame, "Astronauts saved successfully.");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(frame, "Error saving astronauts: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
         menuPanel.add(addAstronautButton);
@@ -111,7 +131,35 @@ public class NASAApplication {
             }
 
             private void displayAstronauts() {
-                throw new UnsupportedOperationException("Unimplemented method 'displayAstronauts'");
+                List<Astronaut> astronauts = astronautManager.getAstronauts();
+                if (astronauts.isEmpty()) {
+                    JOptionPane.showMessageDialog(frame, "No astronauts to display.");
+                    return;
+                }
+            
+                StringBuilder astronautInfo = new StringBuilder();
+                System.out.println("1");
+                for (Astronaut astronaut : astronauts) {
+                    System.out.println("1");
+                    astronautInfo.append("Name: ").append(astronaut.getName()).append("\n")
+                                .append("Email: ").append(astronaut.getEmailAddress()).append("\n")
+                                .append("Date of Birth: ").append(astronaut.getDateOfBirth()).append("\n")
+                                .append("Serial Number: ").append(astronaut.getSerialNumber()).append("\n")
+                                .append("Phone Number: ").append(astronaut.getPhoneNumber()).append("\n")
+                                .append("Address: ").append(astronaut.getAddress()).append("\n")
+                                .append("Pay Rate: ").append(astronaut.getPayRate()).append("\n")
+                                .append("Weight: ").append(astronaut.getWeight()).append("\n")
+                                .append("Status: ").append(astronaut.getStatus()).append("\n")
+                                .append("Marital Status: ").append(astronaut.getMaritalStatus()).append("\n")
+                                .append("Has Children: ").append(astronaut.hasChildren()).append("\n\n");
+                                System.out.println("1");
+                }
+            
+                JTextArea textArea = new JTextArea(astronautInfo.toString());
+                textArea.setEditable(false);
+                JScrollPane scrollPane = new JScrollPane(textArea);
+                scrollPane.setPreferredSize(new Dimension(400, 300));
+                JOptionPane.showMessageDialog(frame, scrollPane, "Astronaut Information", JOptionPane.PLAIN_MESSAGE);
             }
         });
         menuPanel.add(displayAstronautsButton);
@@ -242,29 +290,27 @@ public class NASAApplication {
             }
         });
         menuPanel.add(launchButton);
-
         JButton editAstronautButton = new JButton("Edit Astronaut");
         editAstronautButton.setBounds(100, 350, 150, 25);
         editAstronautButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Code to edit astronaut...
                 List<Astronaut> astronauts = astronautManager.getAstronauts();
                 if (astronauts.isEmpty()) {
                     JOptionPane.showMessageDialog(frame, "No astronauts to edit.");
                     return;
                 }
-
+        
                 String[] astronautNames = new String[astronauts.size()];
                 for (int i = 0; i < astronauts.size(); i++) {
                     astronautNames[i] = astronauts.get(i).getName();
                 }
-
+        
                 String selectedAstronautName = (String) JOptionPane.showInputDialog(frame,
                         "Select Astronaut to Edit:", "Edit Astronaut",
                         JOptionPane.QUESTION_MESSAGE, null,
                         astronautNames, astronautNames[0]);
-
+        
                 if (selectedAstronautName != null && !selectedAstronautName.isEmpty()) {
                     // Find the selected astronaut
                     Astronaut selectedAstronaut = null;
@@ -274,7 +320,7 @@ public class NASAApplication {
                             break;
                         }
                     }
-
+        
                     if (selectedAstronaut != null) {
                         // Display dialog to edit astronaut info
                         String name = JOptionPane.showInputDialog(frame, "Enter new name:", selectedAstronaut.getName());
@@ -285,7 +331,10 @@ public class NASAApplication {
                         String address = JOptionPane.showInputDialog(frame, "Enter new address:", selectedAstronaut.getAddress());
                         double payRate = Double.parseDouble(JOptionPane.showInputDialog(frame, "Enter new pay rate:", selectedAstronaut.getPayRate()));
                         double weight = Double.parseDouble(JOptionPane.showInputDialog(frame, "Enter new weight:", selectedAstronaut.getWeight()));
-
+                        String status = JOptionPane.showInputDialog(frame, "Enter status (single, married, divorced):", selectedAstronaut.getStatus());
+                        String maritalStatus = JOptionPane.showInputDialog(frame, "Enter marital status (single, married, divorced):", selectedAstronaut.getMaritalStatus());
+                        boolean hasChildren = Boolean.parseBoolean(JOptionPane.showInputDialog(frame, "Does the astronaut have children? (true/false):", selectedAstronaut.hasChildren()));
+        
                         // Update astronaut information
                         selectedAstronaut.setName(name);
                         selectedAstronaut.setEmailAddress(email);
@@ -295,7 +344,10 @@ public class NASAApplication {
                         selectedAstronaut.setAddress(address);
                         selectedAstronaut.setPayRate(payRate);
                         selectedAstronaut.setWeight(weight);
-
+                        selectedAstronaut.setStatus(status);
+                        selectedAstronaut.setMaritalStatus(maritalStatus);
+                        selectedAstronaut.setHasChildren(hasChildren);
+        
                         saveAstronauts(); // Save the updated list of astronauts
                         JOptionPane.showMessageDialog(frame, "Astronaut information updated successfully.");
                     } else {
@@ -305,9 +357,9 @@ public class NASAApplication {
                     JOptionPane.showMessageDialog(frame, "Invalid input. Please select an astronaut to edit.");
                 }
             }
-
+        
             private void saveAstronauts() {
-                throw new UnsupportedOperationException("Unimplemented method 'saveAstronauts'");
+                // Implement method to save astronauts
             }
         });
         menuPanel.add(editAstronautButton);
@@ -376,15 +428,16 @@ public class NASAApplication {
             return null;
         }
     }
-
+   
     private class LoginButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             String inputPassword = passwordField.getText();
             if (authenticate(inputPassword)) {
                 JOptionPane.showMessageDialog(frame, "Login successful!");
-                frame.remove(welcomePanel);
                 createMenuPanel();
+                frame.remove(welcomePanel);
+                createMenuPanel(); // Add this line after "Login successful!"
             } else {
                 JOptionPane.showMessageDialog(frame, "Incorrect password. Please try again.");
             }
