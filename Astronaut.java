@@ -64,32 +64,32 @@ public class Astronaut implements Serializable {
     // Getters and setters omitted for brevity
 
     public void setAddress(String address2) {
-        // TODO Auto-generated method stub
+        
         throw new UnsupportedOperationException("Unimplemented method 'setAddress'");
     }
 
     public void setPhoneNumber(int phoneNumber2) {
-        // TODO Auto-generated method stub
+
         throw new UnsupportedOperationException("Unimplemented method 'setPhoneNumber'");
     }
 
     public void setSerialNumber(int serialNumber2) {
-        // TODO Auto-generated method stub
+      
         throw new UnsupportedOperationException("Unimplemented method 'setSerialNumber'");
     }
 
     public void setDateOfBirth(int dob) {
-        // TODO Auto-generated method stub
+      
         throw new UnsupportedOperationException("Unimplemented method 'setDateOfBirth'");
     }
 
     public void setEmailAddress(String email) {
-        // TODO Auto-generated method stub
+       
         throw new UnsupportedOperationException("Unimplemented method 'setEmailAddress'");
     }
 
     public void setName(String name2) {
-        // TODO Auto-generated method stub
+        
         throw new UnsupportedOperationException("Unimplemented method 'setName'");
     }
 }

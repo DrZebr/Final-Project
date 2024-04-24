@@ -1,23 +1,21 @@
 import javax.swing.*;
+
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Base64;
-import java.awt.Font;
+import java.util.*;
 
 public class NASAApplication {
     private static AstronautManager astronautManager;
     private static SpacecraftManager spacecraftManager;
     private static final String PASSWORD_FILE = "password.txt"; // File to store the password
-    private static final String ASTRONAUTS_FILE = "astronauts.dat"; // File to store astronauts
     private JFrame frame;
     private JPanel welcomePanel, menuPanel;
     private JTextField passwordField;
-
+    private static Object adminPasswordHash;
     public static void main(String[] args) {
         astronautManager = new AstronautManager();
         spacecraftManager = new SpacecraftManager();
@@ -32,6 +30,8 @@ public class NASAApplication {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(520, 500);
         frame.setLayout(null);
+
+        loadPassword();
 
         createWelcomePanel();
         frame.add(welcomePanel);
@@ -95,6 +95,10 @@ public class NASAApplication {
                 saveAstronauts(); // Save the updated list of astronauts
                 JOptionPane.showMessageDialog(frame, "Astronaut added successfully.");
             }
+
+            private void saveAstronauts() {
+                throw new UnsupportedOperationException("Unimplemented method 'saveAstronauts'");
+            }
         });
         menuPanel.add(addAstronautButton);
 
@@ -104,6 +108,10 @@ public class NASAApplication {
             @Override
             public void actionPerformed(ActionEvent e) {
                 displayAstronauts();
+            }
+
+            private void displayAstronauts() {
+                throw new UnsupportedOperationException("Unimplemented method 'displayAstronauts'");
             }
         });
         menuPanel.add(displayAstronautsButton);
@@ -132,11 +140,20 @@ public class NASAApplication {
 
                 if (selectedAstronautName != null && !selectedAstronautName.isEmpty()) {
                     astronautManager.removeAstronaut(selectedAstronautName);
+                    removePassword(selectedAstronautName); // Remove astronaut password
                     saveAstronauts(); // Save the updated list of astronauts after removal
                     JOptionPane.showMessageDialog(frame, "Astronaut removed successfully.");
                 } else {
                     JOptionPane.showMessageDialog(frame, "Invalid input. Please select an astronaut to remove.");
                 }
+            }
+
+            private void saveAstronauts() {
+                throw new UnsupportedOperationException("Unimplemented method 'saveAstronauts'");
+            }
+
+            private void removePassword(String selectedAstronautName) {
+                throw new UnsupportedOperationException("Unimplemented method 'removePassword'");
             }
         });
         menuPanel.add(removeAstronautButton);
@@ -201,7 +218,7 @@ public class NASAApplication {
         menuPanel.add(removeSpacecraftButton);
 
         JButton launchButton = new JButton("LAUNCH");
-        launchButton.setBounds(100, 350, 300, 60); // Adjust the bounds for the big button
+        launchButton.setBounds(260, 135, 200, 200); // Adjust the bounds for the big button
         launchButton.setFont(new Font("Arial", Font.BOLD, 20)); // Set font size and style
         launchButton.addActionListener(new ActionListener() {
             @Override
@@ -227,7 +244,7 @@ public class NASAApplication {
         menuPanel.add(launchButton);
 
         JButton editAstronautButton = new JButton("Edit Astronaut");
-        editAstronautButton.setBounds(100, 400, 150, 25);
+        editAstronautButton.setBounds(100, 350, 150, 25);
         editAstronautButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -288,6 +305,10 @@ public class NASAApplication {
                     JOptionPane.showMessageDialog(frame, "Invalid input. Please select an astronaut to edit.");
                 }
             }
+
+            private void saveAstronauts() {
+                throw new UnsupportedOperationException("Unimplemented method 'saveAstronauts'");
+            }
         });
         menuPanel.add(editAstronautButton);
 
@@ -296,6 +317,7 @@ public class NASAApplication {
         frame.repaint();
     }
 
+    @SuppressWarnings("unused")
     private void launchMission() {
         // Ask for astronaut and spacecraft selection
         String selectedAstronaut = (String) JOptionPane.showInputDialog(frame,
@@ -316,75 +338,55 @@ public class NASAApplication {
         }
     }
 
-    private void saveAstronauts() {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(ASTRONAUTS_FILE))) {
-            oos.writeObject(astronautManager.getAstronauts());
+    private void loadPassword() {
+        try (BufferedReader reader = new BufferedReader(new FileReader(PASSWORD_FILE))) {
+            String hashedPassword = reader.readLine();
+            adminPasswordHash = hashedPassword;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private void savePassword(String password) {
+        String hashedPassword = hashPassword(password);
+        try (PrintWriter writer = new PrintWriter(new FileWriter(PASSWORD_FILE))) {
+            writer.println(hashedPassword);
+            adminPasswordHash = hashedPassword; // Update the password hash in memory
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private List<Astronaut> loadAstronauts() {
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(ASTRONAUTS_FILE))) {
-            Object obj = ois.readObject();
-            if (obj instanceof List) {
-                List<Astronaut> astronauts = new ArrayList<>();
-                List<?> list = (List<?>) obj;
-                for (Object o : list) {
-                    if (o instanceof Astronaut) {
-                        astronauts.add((Astronaut) o);
-                    }
-                }
-                return astronauts;
+    private String hashPassword(String password) {
+        try {
+            // Create MessageDigest instance for SHA-256
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            // Add password bytes to digest
+            md.update(password.getBytes());
+            // Get the hashed bytes
+            byte[] hashedBytes = md.digest();
+            // Convert hashed bytes to hexadecimal format
+            StringBuilder sb = new StringBuilder();
+            for (byte b : hashedBytes) {
+                sb.append(String.format("%02x", b));
             }
-        } catch (IOException | ClassNotFoundException e) {
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
+            return null;
         }
-        return new ArrayList<>();
-    }
-
-    private void displayAstronauts() {
-        List<Astronaut> astronauts = loadAstronauts();
-        StringBuilder displayMessage = new StringBuilder("Astronauts:\n");
-
-        for (Astronaut astronaut : astronauts) {
-            // Generate ASCII art representation of the astronaut character
-            String astronautArt = generateAstronautArt();
-
-            // Append astronaut information vertically
-            displayMessage.append(astronautArt).append("\n")
-                    .append("Name: ").append(astronaut.getName()).append("\n")
-                    .append("Email: ").append(astronaut.getEmailAddress()).append("\n")
-                    .append("DOB: ").append(astronaut.getDateOfBirth()).append("\n")
-                    .append("Serial No: ").append(astronaut.getSerialNumber()).append("\n")
-                    .append("Phone No: ").append(astronaut.getPhoneNumber()).append("\n")
-                    .append("Address: ").append(astronaut.getAddress()).append("\n")
-                    .append("Pay Rate: ").append(astronaut.getPayRate()).append("\n")
-                    .append("Weight: ").append(astronaut.getWeight()).append("\n\n");
-                    
-        }
-
-        JOptionPane.showMessageDialog(frame, displayMessage.toString());
-    }
-
-    private String generateAstronautArt() {
-        // ASCII art representation of an astronaut (you can replace this with your own)
-        return "  o\n\\_\\|\\/_/\n   |";
     }
 
     private class LoginButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            String enteredPassword = passwordField.getText();
-            String storedPasswordHash = readStoredPasswordHash();
-
-            if (storedPasswordHash == null) {
-                JOptionPane.showMessageDialog(frame, "No password set. Please create a password first.");
-            } else if (validatePassword(enteredPassword, storedPasswordHash)) {
+            String inputPassword = passwordField.getText();
+            if (authenticate(inputPassword)) {
+                JOptionPane.showMessageDialog(frame, "Login successful!");
                 frame.remove(welcomePanel);
                 createMenuPanel();
             } else {
-                JOptionPane.showMessageDialog(frame, "Incorrect Password. Try again.");
+                JOptionPane.showMessageDialog(frame, "Incorrect password. Please try again.");
             }
         }
     }
@@ -393,45 +395,18 @@ public class NASAApplication {
         @Override
         public void actionPerformed(ActionEvent e) {
             String newPassword = JOptionPane.showInputDialog(frame, "Enter new password:");
-            if (newPassword != null && !newPassword.trim().isEmpty()) {
-                savePassword(newPassword);
-                JOptionPane.showMessageDialog(frame, "Password saved successfully.");
-            } else {
-                JOptionPane.showMessageDialog(frame, "Password not saved. Try again.");
-            }
+            savePassword(newPassword);
+            JOptionPane.showMessageDialog(frame, "Password created/changed successfully.");
         }
     }
 
-    private String readStoredPasswordHash() {
-        try (BufferedReader reader = new BufferedReader(new FileReader(PASSWORD_FILE))) {
-            return reader.readLine();
-        } catch (IOException e) {
-            return null;
+    private boolean authenticate(String password) {
+        if (adminPasswordHash == null) {
+            return false; // Password not set yet
         }
-    }
-
-    private boolean validatePassword(String enteredPassword, String storedPasswordHash) {
-        String enteredPasswordHash = hashPassword(enteredPassword);
-        return enteredPasswordHash != null && enteredPasswordHash.equals(storedPasswordHash);
-    }
-
-    private String hashPassword(String password) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] hash = md.digest(password.getBytes());
-            return Base64.getEncoder().encodeToString(hash);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    private void savePassword(String password) {
-        String hashedPassword = hashPassword(password);
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(PASSWORD_FILE))) {
-            writer.write(hashedPassword);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String enteredHashedPassword = hashPassword(password);
+        System.out.println("Entered Hashed Password: " + enteredHashedPassword);
+        System.out.println("Stored Hashed Password: " + adminPasswordHash);
+        return adminPasswordHash.equals(enteredHashedPassword);
     }
 }
