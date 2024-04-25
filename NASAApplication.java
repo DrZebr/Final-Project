@@ -300,9 +300,7 @@ launchButton.addActionListener(new ActionListener() {
                 System.out.println("Spacecraft launching...");
                 // Call a method to display the ASCII art spacecraft animation
                 displaySpacecraftAnimation();
-
-                System.out.println("Countdown finished. Launching spacecraft...");
-                    displayRocketAnimation();
+                
                 // Remove the countdown label after the countdown is finished
                 menuPanel.remove(countdownLabel);
                 frame.revalidate();
@@ -313,35 +311,6 @@ launchButton.addActionListener(new ActionListener() {
         }
     }
 });
-
-private static void displayRocketAnimation() {
-    // Create a new JPanel for the rocket animation
-    JPanel rocketPanel = new JPanel() {
-        @Override
-        protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            // Draw the rocket animation here
-            Graphics2D g2d = (Graphics2D) g;
-            // Example: Draw a rocket going up
-            g2d.setColor(Color.RED);
-            g2d.fillRect(100, 100, 50, 100); // Example rocket body
-            g2d.setColor(Color.ORANGE);
-            g2d.fillRect(115, 70, 20, 30); // Example rocket top
-            g2d.setColor(Color.YELLOW);
-            g2d.fillRect(105, 200, 40, 10); // Example flames
-        }
-    };
-    rocketPanel.setPreferredSize(new Dimension(300, 300)); // Adjust size as needed
-
-    // Create a new JFrame for the rocket animation
-    JFrame rocketFrame = new JFrame("Rocket Animation");
-    rocketFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    rocketFrame.add(rocketPanel);
-    rocketFrame.pack();
-    rocketFrame.setLocationRelativeTo(null); // Center the frame on screen
-    rocketFrame.setVisible(true);
-}
-
 
 menuPanel.add(launchButton);
  // Existing code...
