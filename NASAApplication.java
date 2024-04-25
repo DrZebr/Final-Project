@@ -298,6 +298,9 @@ launchButton.addActionListener(new ActionListener() {
                 }
                 // After the countdown, display the ASCII art spacecraft animation
                 System.out.println("Spacecraft launching...");
+
+                RocketAnimation.start();
+
                 // Call a method to display the ASCII art spacecraft animation
                 displaySpacecraftAnimation();
                 
@@ -311,6 +314,7 @@ launchButton.addActionListener(new ActionListener() {
         }
     }
 });
+
 
 menuPanel.add(launchButton);
  // Existing code...
@@ -394,21 +398,22 @@ menuPanel.add(launchButton);
  frame.repaint();
 }
 
-/**
-* Display the ASCII art spacecraft animation.
-*/
 private void displaySpacecraftAnimation() {
- // ASCII art spacecraft animation
- System.out.println("   _\\ | /_");
- System.out.println(" '-.\\   /.-'");
- System.out.println("    `---`");
- System.out.println("  \\       /");
- System.out.println("   \\_____/");
- System.out.println("   |     |");
- System.out.println("   |     |");
- System.out.println("  /       \\");
- System.out.println(" /         \\");
- System.out.println("/           \\");
+    // Load the rocket animation GIF
+    ImageIcon rocketIcon = new ImageIcon("rocket_animation.gif");
+
+    // Create a JLabel to display the rocket animation
+    JLabel rocketLabel = new JLabel(rocketIcon);
+
+    // Set the size and position of the rocket label
+    rocketLabel.setBounds(150, 100, 250, 250);
+
+    // Add the rocket label to the menuPanel
+    menuPanel.add(rocketLabel);
+
+    // Refresh the frame to display the rocket animation
+    frame.revalidate();
+    frame.repaint();
 }
 
 

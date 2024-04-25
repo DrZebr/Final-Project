@@ -51,4 +51,8 @@ public class AstronautManager implements Serializable {
             JOptionPane.showMessageDialog(null, "Error saving astronauts: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
+    public void setAstronauts(List<Astronaut> astronauts2) {
+        throw new UnsupportedOperationException("Unimplemented method 'setAstronauts'");
+    }
 }

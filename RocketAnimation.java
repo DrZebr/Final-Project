@@ -22,6 +22,16 @@ public class RocketAnimation extends JPanel {
         timer.start();
     }
 
+    public static void start()
+    {
+        JFrame frame = new JFrame("Rocket Animation");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.getContentPane().add(new RocketAnimation());
+        frame.pack();
+        frame.setLocationRelativeTo(null); // Center the frame
+        frame.setVisible(true);
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

@@ -29,4 +29,8 @@ public class SpacecraftManager implements Serializable {
         }
         return names;
     }
+
+    public void setSpacecrafts(List<SpaceCraft> spacecrafts2) {
+        throw new UnsupportedOperationException("Unimplemented method 'setSpacecrafts'");
+    }
 }
