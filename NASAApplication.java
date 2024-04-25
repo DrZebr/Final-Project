@@ -1,7 +1,6 @@
 import javax.swing.*;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -9,11 +8,6 @@ import java.awt.event.ActionListener;
 import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import javax.swing.JButton;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import java.util.List;
 
 public class NASAApplication {
@@ -219,151 +213,203 @@ public class NASAApplication {
         });
         menuPanel.add(addSpacecraftButton);
 
-        JButton removeSpacecraftButton = new JButton("Remove Spacecraft");
-        removeSpacecraftButton.setBounds(100, 300, 150, 25);
-        removeSpacecraftButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Code to remove spacecraft...
-                List<SpaceCraft> spacecraftList = spacecraftManager.getSpacecrafts();
-                if (spacecraftList.isEmpty()) {
-                    JOptionPane.showMessageDialog(frame, "No spacecrafts to remove.");
-                    return;
-                }
+ // Existing code...
 
-                String[] spacecraftNames = new String[spacecraftList.size()];
-                for (int i = 0; i < spacecraftList.size(); i++) {
-                    spacecraftNames[i] = spacecraftList.get(i).getName();
-                }
+ JButton removeSpacecraftButton = new JButton("Remove Spacecraft");
+ removeSpacecraftButton.setBounds(100, 300, 150, 25);
+ removeSpacecraftButton.addActionListener(new ActionListener() {
+     @Override
+     public void actionPerformed(ActionEvent e) {
+         // Code to remove spacecraft...
+         List<SpaceCraft> spacecraftList = spacecraftManager.getSpacecrafts();
+         if (spacecraftList.isEmpty()) {
+             JOptionPane.showMessageDialog(frame, "No spacecrafts to remove.");
+             return;
+         }
 
-                String selectedSpacecraftName = (String) JOptionPane.showInputDialog(frame,
-                        "Select Spacecraft to Remove:", "Remove Spacecraft",
-                        JOptionPane.QUESTION_MESSAGE, null,
-                        spacecraftNames, spacecraftNames[0]);
+         String[] spacecraftNames = new String[spacecraftList.size()];
+         for (int i = 0; i < spacecraftList.size(); i++) {
+             spacecraftNames[i] = spacecraftList.get(i).getName();
+         }
 
-                if (selectedSpacecraftName != null) {
-                    SpaceCraft spacecraftToRemove = null;
-                    for (SpaceCraft spacecraft : spacecraftList) {
-                        if (spacecraft.getName().equals(selectedSpacecraftName)) {
-                            spacecraftToRemove = spacecraft;
-                            break;
-                        }
+         String selectedSpacecraftName = (String) JOptionPane.showInputDialog(frame,
+                 "Select Spacecraft to Remove:", "Remove Spacecraft",
+                 JOptionPane.QUESTION_MESSAGE, null,
+                 spacecraftNames, spacecraftNames[0]);
+
+         if (selectedSpacecraftName != null) {
+             SpaceCraft spacecraftToRemove = null;
+             for (SpaceCraft spacecraft : spacecraftList) {
+                 if (spacecraft.getName().equals(selectedSpacecraftName)) {
+                     spacecraftToRemove = spacecraft;
+                     break;
+                 }
+             }
+
+             if (spacecraftToRemove != null) {
+                 spacecraftManager.removeSpacecraft(spacecraftToRemove);
+                 JOptionPane.showMessageDialog(frame, "Spacecraft removed successfully.");
+             } else {
+                 JOptionPane.showMessageDialog(frame, "Selected spacecraft not found.");
+             }
+         }
+     }
+ });
+ menuPanel.add(removeSpacecraftButton);
+
+ JButton launchButton = new JButton("LAUNCH");
+launchButton.setBounds(260, 135, 200, 200); // Adjust the bounds for the big button
+launchButton.setFont(new Font("Arial", Font.BOLD, 20)); // Set font size and style
+launchButton.addActionListener(new ActionListener() {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        // Code to handle the launch action...
+        String selectedAstronaut = (String) JOptionPane.showInputDialog(frame,
+                "Select an astronaut:", "Launch",
+                JOptionPane.QUESTION_MESSAGE, null,
+                astronautManager.getAstronautNamesArray(), null);
+
+        String selectedSpacecraft = (String) JOptionPane.showInputDialog(frame,
+                "Select a spacecraft:", "Launch",
+                JOptionPane.QUESTION_MESSAGE, null,
+                spacecraftManager.getSpacecraftNamesArray(), null);
+
+        if (selectedAstronaut != null && selectedSpacecraft != null) {
+            int countdownSeconds = 5; // Set the countdown time in seconds
+            JOptionPane.showMessageDialog(frame, "Launching " + selectedAstronaut + " into " + selectedSpacecraft + " in " + countdownSeconds + " seconds.");
+
+            // Create a label to display the countdown
+            JLabel countdownLabel = new JLabel(String.valueOf(countdownSeconds));
+            countdownLabel.setBounds(310, 340, 100, 25); // Adjust the position of the countdown label
+            menuPanel.add(countdownLabel); // Add the countdown label to the menuPanel
+
+            // Start the countdown
+            new Thread(() -> {
+                for (int i = countdownSeconds; i >= 0; i--) {
+                    try {
+                        Thread.sleep(1000); // Sleep for 1 second
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
                     }
-
-                    if (spacecraftToRemove != null) {
-                        spacecraftManager.removeSpacecraft(spacecraftToRemove);
-                        JOptionPane.showMessageDialog(frame, "Spacecraft removed successfully.");
-                    } else {
-                        JOptionPane.showMessageDialog(frame, "Selected spacecraft not found.");
-                    }
+                    // Update the countdown label with the current countdown value
+                    final Integer count = i;
+                    SwingUtilities.invokeLater(() -> countdownLabel.setText(String.valueOf(count)));
+                    launchButton.setText(count.toString());
                 }
-            }
-        });
-        menuPanel.add(removeSpacecraftButton);
+                // After the countdown, display the ASCII art spacecraft animation
+                System.out.println("Spacecraft launching...");
+                // Call a method to display the ASCII art spacecraft animation
+                displaySpacecraftAnimation();
 
-        JButton launchButton = new JButton("LAUNCH");
-        launchButton.setBounds(260, 135, 200, 200); // Adjust the bounds for the big button
-        launchButton.setFont(new Font("Arial", Font.BOLD, 20)); // Set font size and style
-        launchButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Code to handle the launch action...
-                String selectedAstronaut = (String) JOptionPane.showInputDialog(frame,
-                        "Select an astronaut:", "Launch",
-                        JOptionPane.QUESTION_MESSAGE, null,
-                        astronautManager.getAstronautNamesArray(), null);
-
-                String selectedSpacecraft = (String) JOptionPane.showInputDialog(frame,
-                        "Select a spacecraft:", "Launch",
-                        JOptionPane.QUESTION_MESSAGE, null,
-                        spacecraftManager.getSpacecraftNamesArray(), null);
-
-                if (selectedAstronaut != null && selectedSpacecraft != null) {
-                    JOptionPane.showMessageDialog(frame, "Launching " + selectedAstronaut + " into " + selectedSpacecraft);
-                } else {
-                    JOptionPane.showMessageDialog(frame, "Launch cancelled.");
-                }
-            }
-        });
-        menuPanel.add(launchButton);
-        JButton editAstronautButton = new JButton("Edit Astronaut");
-        editAstronautButton.setBounds(100, 350, 150, 25);
-        editAstronautButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                List<Astronaut> astronauts = astronautManager.getAstronauts();
-                if (astronauts.isEmpty()) {
-                    JOptionPane.showMessageDialog(frame, "No astronauts to edit.");
-                    return;
-                }
-        
-                String[] astronautNames = new String[astronauts.size()];
-                for (int i = 0; i < astronauts.size(); i++) {
-                    astronautNames[i] = astronauts.get(i).getName();
-                }
-        
-                String selectedAstronautName = (String) JOptionPane.showInputDialog(frame,
-                        "Select Astronaut to Edit:", "Edit Astronaut",
-                        JOptionPane.QUESTION_MESSAGE, null,
-                        astronautNames, astronautNames[0]);
-        
-                if (selectedAstronautName != null && !selectedAstronautName.isEmpty()) {
-                    // Find the selected astronaut
-                    Astronaut selectedAstronaut = null;
-                    for (Astronaut astronaut : astronauts) {
-                        if (astronaut.getName().equals(selectedAstronautName)) {
-                            selectedAstronaut = astronaut;
-                            break;
-                        }
-                    }
-        
-                    if (selectedAstronaut != null) {
-                        // Display dialog to edit astronaut info
-                        String name = JOptionPane.showInputDialog(frame, "Enter new name:", selectedAstronaut.getName());
-                        String email = JOptionPane.showInputDialog(frame, "Enter new email:", selectedAstronaut.getEmailAddress());
-                        int dob = Integer.parseInt(JOptionPane.showInputDialog(frame, "Enter new date of birth:", selectedAstronaut.getDateOfBirth()));
-                        int serialNumber = Integer.parseInt(JOptionPane.showInputDialog(frame, "Enter new serial number:", selectedAstronaut.getSerialNumber()));
-                        int phoneNumber = Integer.parseInt(JOptionPane.showInputDialog(frame, "Enter new phone number:", selectedAstronaut.getPhoneNumber()));
-                        String address = JOptionPane.showInputDialog(frame, "Enter new address:", selectedAstronaut.getAddress());
-                        double payRate = Double.parseDouble(JOptionPane.showInputDialog(frame, "Enter new pay rate:", selectedAstronaut.getPayRate()));
-                        double weight = Double.parseDouble(JOptionPane.showInputDialog(frame, "Enter new weight:", selectedAstronaut.getWeight()));
-                        String status = JOptionPane.showInputDialog(frame, "Enter status (single, married, divorced):", selectedAstronaut.getStatus());
-                        String maritalStatus = JOptionPane.showInputDialog(frame, "Enter marital status (single, married, divorced):", selectedAstronaut.getMaritalStatus());
-                        boolean hasChildren = Boolean.parseBoolean(JOptionPane.showInputDialog(frame, "Does the astronaut have children? (true/false):", selectedAstronaut.hasChildren()));
-        
-                        // Update astronaut information
-                        selectedAstronaut.setName(name);
-                        selectedAstronaut.setEmailAddress(email);
-                        selectedAstronaut.setDateOfBirth(dob);
-                        selectedAstronaut.setSerialNumber(serialNumber);
-                        selectedAstronaut.setPhoneNumber(phoneNumber);
-                        selectedAstronaut.setAddress(address);
-                        selectedAstronaut.setPayRate(payRate);
-                        selectedAstronaut.setWeight(weight);
-                        selectedAstronaut.setStatus(status);
-                        selectedAstronaut.setMaritalStatus(maritalStatus);
-                        selectedAstronaut.setHasChildren(hasChildren);
-        
-                        saveAstronauts(); // Save the updated list of astronauts
-                        JOptionPane.showMessageDialog(frame, "Astronaut information updated successfully.");
-                    } else {
-                        JOptionPane.showMessageDialog(frame, "Selected astronaut not found.");
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(frame, "Invalid input. Please select an astronaut to edit.");
-                }
-            }
-        
-            private void saveAstronauts() {
-                // Implement method to save astronauts
-            }
-        });
-        menuPanel.add(editAstronautButton);
-
-        frame.add(menuPanel);
-        frame.revalidate();
-        frame.repaint();
+                // Remove the countdown label after the countdown is finished
+                menuPanel.remove(countdownLabel);
+                frame.revalidate();
+                frame.repaint();
+            }).start();
+        } else {
+            JOptionPane.showMessageDialog(frame, "Launch cancelled.");
+        }
     }
+});
+menuPanel.add(launchButton);
+ // Existing code...
+
+ JButton editAstronautButton = new JButton("Edit Astronaut");
+ editAstronautButton.setBounds(100, 350, 150, 25);
+ editAstronautButton.addActionListener(new ActionListener() {
+     @Override
+     public void actionPerformed(ActionEvent e) {
+         List<Astronaut> astronauts = astronautManager.getAstronauts();
+         if (astronauts.isEmpty()) {
+             JOptionPane.showMessageDialog(frame, "No astronauts to edit.");
+             return;
+         }
+
+         String[] astronautNames = new String[astronauts.size()];
+         for (int i = 0; i < astronauts.size(); i++) {
+             astronautNames[i] = astronauts.get(i).getName();
+         }
+
+         String selectedAstronautName = (String) JOptionPane.showInputDialog(frame,
+                 "Select Astronaut to Edit:", "Edit Astronaut",
+                 JOptionPane.QUESTION_MESSAGE, null,
+                 astronautNames, astronautNames[0]);
+
+         if (selectedAstronautName != null && !selectedAstronautName.isEmpty()) {
+             // Find the selected astronaut
+             Astronaut selectedAstronaut = null;
+             for (Astronaut astronaut : astronauts) {
+                 if (astronaut.getName().equals(selectedAstronautName)) {
+                     selectedAstronaut = astronaut;
+                     break;
+                 }
+             }
+
+             if (selectedAstronaut != null) {
+                 // Display dialog to edit astronaut info
+                 String name = JOptionPane.showInputDialog(frame, "Enter new name:", selectedAstronaut.getName());
+                 String email = JOptionPane.showInputDialog(frame, "Enter new email:", selectedAstronaut.getEmailAddress());
+                 int dob = Integer.parseInt(JOptionPane.showInputDialog(frame, "Enter new date of birth:", selectedAstronaut.getDateOfBirth()));
+                 int serialNumber = Integer.parseInt(JOptionPane.showInputDialog(frame, "Enter new serial number:", selectedAstronaut.getSerialNumber()));
+                 int phoneNumber = Integer.parseInt(JOptionPane.showInputDialog(frame, "Enter new phone number:", selectedAstronaut.getPhoneNumber()));
+                 String address = JOptionPane.showInputDialog(frame, "Enter new address:", selectedAstronaut.getAddress());
+                 double payRate = Double.parseDouble(JOptionPane.showInputDialog(frame, "Enter new pay rate:", selectedAstronaut.getPayRate()));
+                 double weight = Double.parseDouble(JOptionPane.showInputDialog(frame, "Enter new weight:", selectedAstronaut.getWeight()));
+                 String status = JOptionPane.showInputDialog(frame, "Enter status (single, married, divorced):", selectedAstronaut.getStatus());
+                 String maritalStatus = JOptionPane.showInputDialog(frame, "Enter marital status (single, married, divorced):", selectedAstronaut.getMaritalStatus());
+                 boolean hasChildren = Boolean.parseBoolean(JOptionPane.showInputDialog(frame, "Does the astronaut have children? (true/false):", selectedAstronaut.hasChildren()));
+
+                 // Update astronaut information
+                 selectedAstronaut.setName(name);
+                 selectedAstronaut.setEmailAddress(email);
+                 selectedAstronaut.setDateOfBirth(dob);
+                 selectedAstronaut.setSerialNumber(serialNumber);
+                 selectedAstronaut.setPhoneNumber(phoneNumber);
+                 selectedAstronaut.setAddress(address);
+                 selectedAstronaut.setPayRate(payRate);
+                 selectedAstronaut.setWeight(weight);
+                 selectedAstronaut.setStatus(status);
+                 selectedAstronaut.setMaritalStatus(maritalStatus);
+                 selectedAstronaut.setHasChildren(hasChildren);
+
+                 saveAstronauts(); // Save the updated list of astronauts
+                 JOptionPane.showMessageDialog(frame, "Astronaut information updated successfully.");
+             } else {
+                 JOptionPane.showMessageDialog(frame, "Selected astronaut not found.");
+             }
+         } else {
+             JOptionPane.showMessageDialog(frame, "Invalid input. Please select an astronaut to edit.");
+         }
+     }
+
+     private void saveAstronauts() {
+         // Implement method to save astronauts
+     }
+ });
+ menuPanel.add(editAstronautButton);
+
+ frame.add(menuPanel);
+ frame.revalidate();
+ frame.repaint();
+}
+
+/**
+* Display the ASCII art spacecraft animation.
+*/
+private void displaySpacecraftAnimation() {
+ // ASCII art spacecraft animation
+ System.out.println("   _\\ | /_");
+ System.out.println(" '-.\\   /.-'");
+ System.out.println("    `---`");
+ System.out.println("  \\       /");
+ System.out.println("   \\_____/");
+ System.out.println("   |     |");
+ System.out.println("   |     |");
+ System.out.println("  /       \\");
+ System.out.println(" /         \\");
+ System.out.println("/           \\");
+}
+
 
     @SuppressWarnings("unused")
     private void launchMission() {
