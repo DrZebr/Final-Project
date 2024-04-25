@@ -3,41 +3,34 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class RocketAnimation extends JPanel {
+public class SpacecraftAnimation extends JPanel {
 
-    private int rocketY = 500; // Initial position of the rocket
-    private Color backgroundColor = Color.BLUE; // Initial background color
+    private int rocketY = -100; // Initial position of the rocket at the top of the panel
+    private int moonX = 50; // Position of the moon
+    private int moonY = 250; // Position of the moon
+    private int moonWidth = 420; // Width of the moon
+    private int moonHeight = 420; // Height of the moon
+    private int landingThreshold = 50; // Distance threshold for landing
 
-    public RocketAnimation() {
+    public SpacecraftAnimation() {
         Timer timer = new Timer(50, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Update rocket position
-                rocketY -= 5; // Adjust the speed as needed
-                if (rocketY < -100) {
-                    ((Timer) e.getSource()).stop(); // Stop the timer when rocket goes out of view
+                rocketY += 5; // Move the rocket downwards
+                if (rocketY >= moonY - landingThreshold) { // Adjusted stop condition for landing
+                    ((Timer) e.getSource()).stop(); // Stop the timer when rocket lands on the moon
                 }
-                updateBackgroundColor(); // Update background color
                 repaint(); // Trigger repaint to update the animation
             }
         });
         timer.start();
     }
 
-    private void updateBackgroundColor() {
-        // Gradually change the background color from blue to black as the rocket ascends
-        float ratio = (float) (500 - rocketY) / 500; // Calculate ratio based on rocket position
-        backgroundColor = new Color(
-                (int) (ratio * 0 + (1 - ratio) * 0), // Red component
-                (int) (ratio * 0 + (1 - ratio) * 0), // Green component
-                (int) (ratio * 0 + (1 - ratio) * 0)  // Blue component
-        );
-    }
-
     public static void start() {
         JFrame frame = new JFrame("Rocket Animation");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.getContentPane().add(new RocketAnimation());
+        frame.getContentPane().add(new SpacecraftAnimation());
         frame.pack();
         frame.setLocationRelativeTo(null); // Center the frame
         frame.setVisible(true);
@@ -46,13 +39,27 @@ public class RocketAnimation extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        // Draw background gradient
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.setPaint(new GradientPaint(0, getHeight(), Color.BLUE, 0, 0, backgroundColor));
-        g2d.fillRect(0, 0, getWidth(), getHeight());
+
+        // Set background color to black
+        setBackground(Color.BLACK);
+
+        // Draw the moon
+        drawMoon(g);
 
         // Draw the rocket
         drawRocket(g);
+    }
+
+    private void drawMoon(Graphics g) {
+        Graphics2D g2d = (Graphics2D) g;
+
+        // Moon gradient
+        GradientPaint moonGradient = new GradientPaint(
+                moonX + moonWidth / 2, moonY + moonHeight / 2, new Color(255, 255, 255, 220),
+                moonX + moonWidth / 2, moonY + moonHeight, new Color(150, 150, 150, 50)
+        );
+        g2d.setPaint(moonGradient);
+        g2d.fillOval(moonX, moonY, moonWidth, moonHeight);
     }
 
     private void drawRocket(Graphics g) {
