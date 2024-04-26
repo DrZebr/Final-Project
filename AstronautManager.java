@@ -1,5 +1,7 @@
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -13,17 +15,21 @@ public class AstronautManager implements Serializable {
 
     public AstronautManager() {
         astronauts = new ArrayList<>();
+        // Load astronauts from file on initialization
+        loadAstronauts();
     }
 
     public void addAstronaut(Astronaut astronaut) {
         astronauts.add(astronaut);
-        saveAstronauts(); // Pass the frame here
+        saveAstronauts();
     }
+
     public void removeAstronaut(String name) {
         for (Iterator<Astronaut> iterator = astronauts.iterator(); iterator.hasNext();) {
             Astronaut astronaut = iterator.next();
             if (astronaut.getName().equals(name)) {
                 iterator.remove();
+                saveAstronauts();
                 return;
             }
         }
@@ -51,6 +57,18 @@ public class AstronautManager implements Serializable {
             JOptionPane.showMessageDialog(null, "Error saving astronauts: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
+    @SuppressWarnings("unchecked")
+    private void loadAstronauts() {
+        try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(ASTRONAUTS_FILE))) {
+            astronauts = (List<Astronaut>) inputStream.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            // Handle exceptions or ignore if file does not exist yet
+            // e.printStackTrace();
+            System.out.println("Astronaut file not found. Creating new file.");
+        }
+    }
+
 
     public void setAstronauts(List<Astronaut> astronauts2) {
         throw new UnsupportedOperationException("Unimplemented method 'setAstronauts'");

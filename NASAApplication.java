@@ -202,9 +202,9 @@ public class NASAApplication {
                 // Code to add spacecraft...
                 String name = JOptionPane.showInputDialog(frame, "Enter spacecraft name:");
                 String model = JOptionPane.showInputDialog(frame, "Enter spacecraft model:");
-                int capacity = Integer.parseInt(JOptionPane.showInputDialog(frame, "Enter spacecraft capacity:"));
+                int fuel = Integer.parseInt(JOptionPane.showInputDialog(frame, "Enter spacecraft fuel:"));
 
-                SpaceCraft spacecraft = new SpaceCraft(name, model, capacity);
+                SpaceCraft spacecraft = new SpaceCraft(name, model, fuel);
                 spacecraftManager.addSpacecraft(spacecraft);
                 JOptionPane.showMessageDialog(frame, "Spacecraft added successfully.");
             }

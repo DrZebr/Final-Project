@@ -1,5 +1,8 @@
+import java.io.Serializable;
 
-public class SpaceCraft {
+public class SpaceCraft implements Serializable {
+    private static final long serialVersionUID = 1L; // Added serialVersionUID
+
     private String name;
     private String model;
     private int capacity;
@@ -9,16 +12,18 @@ public class SpaceCraft {
         this.model = model;
         this.capacity = capacity;
     }
-    public String getModel() {
-        return this.model;
-    }
-    
-    public int getCapacity() {
-        return this.capacity;
-    }
-    public String getName(){
-        return this.name;
+
+    public String getName() {
+        return name;
     }
 
-    // Getters and setters omitted for brevity
+    public String getModel() {
+        return model;
+    }
+
+    public int getCapacity() {
+        return capacity;
+    }
+
+    // Other getters and setters if needed
 }
