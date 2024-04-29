@@ -36,6 +36,26 @@ public class SpacecraftAnimation extends JPanel {
         timer.start(); // Start the timer
     }
 
+//     public void start()
+//     {   Timer timer = new Timer(50, new ActionListener() {
+//         @Override
+//         public void actionPerformed(ActionEvent e) {
+//             if (!landed) {
+//                 if (fuel > 0) {
+//                     // Rocket is powered by fuel
+//                     consumeFuel();
+//                     updateRocketPosition();
+//                 } else {
+//                     // Rocket is in freefall
+//                     enterFreefall();
+//                 }
+//             }
+//             repaint(); // Repaint the panel to update the animation
+//         }
+//     });
+//     timer.start(); // Start the timer
+// }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

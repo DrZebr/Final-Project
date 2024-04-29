@@ -274,7 +274,7 @@ launchButton.addActionListener(new ActionListener() {
 
         if (selectedAstronaut != null && selectedSpacecraft != null) {
             int countdownSeconds = 5; // Set the countdown time in seconds
-            JOptionPane.showMessageDialog(frame, "Launching " + selectedAstronaut + " into " + selectedSpacecraft + " in " + countdownSeconds + " seconds.");
+            JOptionPane.showMessageDialog(frame, "Launching " + selectedAstronaut + " into space in " + countdownSeconds + " seconds.");
 
             // Create a label to display the countdown
             JLabel countdownLabel = new JLabel(String.valueOf(countdownSeconds));
@@ -297,7 +297,9 @@ launchButton.addActionListener(new ActionListener() {
                 // After the countdown, display the ASCII art spacecraft animation
                 System.out.println("Spacecraft launching...");
 
-                RocketAnimation.start();
+                SpacecraftAnimation.start();
+                // SpacecraftAnimation keyboard = new SpacecraftAnimation();
+
 
                 // Call a method to display the ASCII art spacecraft animation
                 displaySpacecraftAnimation();
