@@ -20,11 +20,31 @@ public class NASAApplication {
     public static void main(String[] args) {
         astronautManager = new AstronautManager();
         spacecraftManager = new SpacecraftManager();
+    
+        double initialFuel = 1000.0; // Initial fuel amount for the spacecraft
+
+        // Start the SpacecraftAnimation with the initial fuel amount
         SwingUtilities.invokeLater(() -> {
             NASAApplication app = new NASAApplication();
-            app.createAndShowGUI();
+            app.createAndShowGUI(initialFuel);
         });
     }
+
+    private void createAndShowGUI(double initialFuel) {
+    frame = new JFrame("NASA Application");
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    frame.setSize(520, 500);
+    frame.setLayout(null);
+
+    loadPassword();
+
+    createWelcomePanel();
+    frame.add(welcomePanel);
+    frame.setVisible(true);
+
+    // Start the SpacecraftAnimation with the initial fuel amount
+    //SpacecraftAnimation.start(initialFuel);
+}
 
     void createAndShowGUI() {
         frame = new JFrame("NASA Application");
@@ -297,7 +317,7 @@ launchButton.addActionListener(new ActionListener() {
                 // After the countdown, display the ASCII art spacecraft animation
                 System.out.println("Spacecraft launching...");
 
-                SpacecraftAnimation.start();
+                SpacecraftAnimation.start(countdownSeconds);
                 // SpacecraftAnimation keyboard = new SpacecraftAnimation();
 
 
