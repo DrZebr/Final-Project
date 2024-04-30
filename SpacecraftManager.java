@@ -71,4 +71,9 @@ public class SpacecraftManager implements Serializable {
             System.out.println("Spacecraft file not found. Creating new file.");
         }
     }
+
+    public SpaceCraft getSpacecraftByName(String selectedSpacecraft) {
+       
+        throw new UnsupportedOperationException("Unimplemented method 'getSpacecraftByName'");
+    }
 }
